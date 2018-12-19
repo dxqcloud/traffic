@@ -2,9 +2,10 @@
 import os
 import torch.nn as nn
 import torch
-from torchvision import models
+from torchvision import models, transforms
 from torch.utils.data import DataLoader, Dataset
 import argparse
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
 from utils.TrafficDataset import TrafficDataSet
 from utils import data_util
@@ -16,7 +17,7 @@ class Model(nn.Module):
     def __init__(self, num_class):
         super(Model, self).__init__()
         self.num_class = num_class
-        resnet = models.resnet18(True)
+        resnet = models.resnet18(False)
         feature_size = 107520
 
         resnet = nn.Sequential(*list(resnet.children())[:-1])
@@ -59,7 +60,6 @@ def train(train_data, test_data, model, args):
         for x, y in train_data:
 
             optimzer.zero_grad()
-            x = x[:, :, 0:3, :, :]
             x = x.type("torch.FloatTensor")
             if args.use_gpu:
                 x = x.cuda()
@@ -80,9 +80,9 @@ def train(train_data, test_data, model, args):
         with torch.no_grad():
             loss = 0
             total = 0
-            correct = 0
+            y_pred = []
+            y_label = []
             for x, y in test_data:
-                x = x[:, :, 0:3, :, :]
                 x = x.type("torch.FloatTensor")
                 if args.use_gpu:
                     x = x.cuda()
@@ -90,12 +90,19 @@ def train(train_data, test_data, model, args):
                 out = model.forward(x)
                 loss += lossfunc(out, y).item()
                 total += y.size(0)
+
                 _, predicted = torch.max(out, 1)
-                correct += (predicted == y).sum()
+
+                y_label.extend(y.item())
+                y_pred.append(predicted)
 
             print("total test samples:", total)
             print("loss:", loss / total)
-            print("accuracy={}%".format(100 * correct / float(total)))
+
+            print("accuracy={}%".format(100 * accuracy_score(y_label, y_pred)))
+            print(confusion_matrix(y_label, y_pred))
+            print(classification_report(y_label, y_pred))
+
             model_path = os.path.join(args.save_path, "model.{}.pth".format(epoch))
             torch.save(model.state_dict(), model_path)
             print("saving model to {}".format(model_path))
@@ -113,20 +120,29 @@ if __name__ == "__main__":
     paser.add_argument("--epochs", type=int, default=10)
     paser.add_argument("--lr", type=float, default=0.0001)
     paser.add_argument("--use_gpu", type=bool, default=True)
+    paser.add_argument("--augmention")
     paser.add_argument("--num_class", type=int, default=2)
     args = paser.parse_args()
 
     xlist = os.listdir(args.xml_path)
     train_names, test_names = data_util.SplitData(args.image_path, "train", xlist, 0.5)
 
+    transform = None
+    if args.augmention:
+        normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                         std=[0.229, 0.224, 0.225])
+        transform = transforms.Compose([
+            normalize,
+            transforms.RandomRotation(5),
+            transforms.ColorJitter(brightness=0.1)
+        ])
+
+
     dataset = TrafficDataSet(args.image_path, args.xml_path, train_names, 500, 400)
     train_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=True)
 
     dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, 500, 400)
     test_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=False)
-
-    # for x, y in test_loader:
-    #     print(x.shape)
 
     print("Train data:", len(train_loader))
     print("Test data:", len(test_loader))

@@ -97,4 +97,3 @@ if __name__ == "__main__":
     w = img.shape[1]
     img[0:h,2*w//3:w] = 0
     cv2.imwrite("../../report/image/{}_0.jpg".format(fileid), img)
-

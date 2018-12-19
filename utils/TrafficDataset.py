@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageFile
 from utils import data_util
+from torchvision.transforms import ToTensor
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -22,12 +23,13 @@ labelColor = {'白实线':60, '黄实线':60, '停止线':75,
               '直行信号灯':195, '左转信号灯':210, '右转信号灯':225,}
 
 class TrafficDataSet(Dataset):
-    def __init__(self, imagepath, xmlpath, names, width, height):
+    def __init__(self, imagepath, xmlpath, names, width, height, transform=None):
         self.imagepath = imagepath
         self.xmlpath = xmlpath
         self.width = width
         self.height = height
         self.shape = (width, height)
+        self.transform = transform
 
         self.names = names
 
@@ -54,8 +56,9 @@ class TrafficDataSet(Dataset):
 
         filepath = os.path.join(self.imagepath, file_path)
         image = Image.open(filepath)
+        image = np.array(image)
 
-        array = data_util.image_split(np.array(image), tmps, (self.width, self.height))
+        array = data_util.image_split(image, tmps, (self.width, self.height))
 
         array = np.stack(array)
 
@@ -72,7 +75,10 @@ class TrafficDataSet(Dataset):
         x, y = self.load_data(file)
         x = np.transpose(x, (0, 3, 1, 2)) / 255.0
 
-        return x.astype(np.float), y
+        if self.transform:
+            x = self.transform(x)
+
+        return x, y
 
     def __len__(self):
         return len(self.names)
