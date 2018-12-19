@@ -21,7 +21,7 @@ class Model(nn.Module):
         resnet.conv1 = nn.Conv2d(4, 64, kernel_size=7, stride=2, padding=3,
                                bias=False)
 
-        feature_size = 107520 + 3
+        feature_size = 55296 + 3
 
         resnet = nn.Sequential(*list(resnet.children())[:-1])
 
@@ -144,14 +144,17 @@ def train(args):
             transforms.ColorJitter(brightness=0.1)
         ])
 
-    dataset = TrafficDataSet(args.image_path, args.xml_path, train_names, 500, 400, transform=transform)
+    dataset = TrafficDataSet(args.image_path, args.xml_path, train_names, 480, 320, transform=transform)
     train_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=True)
 
-    dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, 500, 400)
+    dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, 480, 320)
     test_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=False)
     #
     # for x, type, y in train_loader:
     #     print(x.shape, type.shape, y.shape)
+
+    if not os.path.exists(args.save_path):
+        os.mkdir(args.save_path)
 
     print("Train data:", len(train_loader))
     print("Test data:", len(test_loader))
@@ -171,7 +174,7 @@ def predict(args):
 
     test_names = os.listdir(args.image_path)
 
-    dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, 500, 400)
+    dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, 480, 320)
     test_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=False)
 
     print("Test data:", len(test_loader))
@@ -202,7 +205,7 @@ if __name__ == "__main__":
     paser.add_argument("--pretrain_model", type=str, default="")
     paser.add_argument("--batch_size", type=int, default=64)
     paser.add_argument("--worker", type=int, default=4)
-    paser.add_argument("--epochs", type=int, default=10)
+    paser.add_argument("--epochs", type=int, default=50)
     paser.add_argument("--lr", type=float, default=0.0001)
     paser.add_argument("--use_gpu", type=bool, default=True)
     paser.add_argument("--augmentation", type=bool, default=False)
