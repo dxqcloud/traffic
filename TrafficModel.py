@@ -52,7 +52,7 @@ class Model(nn.Module):
         return out
 
 
-def train(train_data, test_data, model, args):
+def train_model(train_data, test_data, model, args):
     lossfunc = nn.CrossEntropyLoss()
     optimzer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
 
@@ -103,48 +103,49 @@ def train(train_data, test_data, model, args):
 
             print("accuracy={}%".format(100 * accuracy_score(y_label, y_pred)))
             print(confusion_matrix(y_label, y_pred))
-            print(classification_report(y_label, y_pred))
+            # print(classification_report(y_label, y_pred))
 
             model_path = os.path.join(args.save_path, "model.{}.pth".format(epoch))
             torch.save(model.state_dict(), model_path)
             print("saving model to {}".format(model_path))
 
+def predict_model(test_data, model, args):
 
-if __name__ == "__main__":
+    with torch.no_grad():
+        y_pred = []
+        for x in test_data:
+            x = x.type("torch.FloatTensor")
+            if args.use_gpu:
+                x = x.cuda()
+            out = model.forward(x)
+            _, predicted = torch.max(out, 1)
+            y_pred.extend(predicted)
 
-    paser.add_argument("--image_path", type=str, required=True)
-    paser.add_argument("--xml_path", type=str, required=True)
-    paser.add_argument("--mode", type=str, default="train")
-    paser.add_argument("--save_path", type=str, default="model")
-    paser.add_argument("--model", type=str, default="")
-    paser.add_argument("--batch_size", type=int, default=64)
-    paser.add_argument("--worker", type=int, default=4)
-    paser.add_argument("--epochs", type=int, default=10)
-    paser.add_argument("--lr", type=float, default=0.0001)
-    paser.add_argument("--use_gpu", type=bool, default=True)
-    paser.add_argument("--augmention")
-    paser.add_argument("--num_class", type=int, default=2)
-    args = paser.parse_args()
+    return y_pred
+
+
+def train(args):
 
     xlist = os.listdir(args.xml_path)
     train_names, test_names = data_util.SplitData(args.image_path, "train", xlist, 0.5)
 
     transform = None
-    if args.augmention:
-        normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                         std=[0.229, 0.224, 0.225])
+    if args.augmentation:
+        normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406, 0],
+                                         std=[0.229, 0.224, 0.225, 1])
         transform = transforms.Compose([
-            normalize,
             transforms.RandomRotation(5),
             transforms.ColorJitter(brightness=0.1)
         ])
 
-
-    dataset = TrafficDataSet(args.image_path, args.xml_path, train_names, 500, 400)
+    dataset = TrafficDataSet(args.image_path, args.xml_path, train_names, 500, 400, transform=transform)
     train_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=True)
 
     dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, 500, 400)
     test_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=False)
+    #
+    # for x, y in train_loader:
+    #     print(x.shape)
 
     print("Train data:", len(train_loader))
     print("Test data:", len(test_loader))
@@ -152,7 +153,53 @@ if __name__ == "__main__":
     model = Model(args.num_class)
 
     if args.use_gpu:
-               model = model.cuda()
+        model = model.cuda()
 
     print("Begin training......")
-    train(train_loader, test_loader, model, args)
+    train_model(train_loader, test_loader, model, args)
+
+
+def predict(args):
+
+    test_names = os.listdir(args.image_path)
+
+    dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, 500, 400)
+    test_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=False)
+
+    print("Test data:", len(test_loader))
+    print("Build Model......")
+    model = Model(args.num_class)
+    model.load_state_dict(args.model)
+
+    if args.use_gpu:
+        model = model.cuda()
+
+    print("Begin Test......")
+    pred_result = predict_model(test_loader, model, args)
+
+    with open(os.path.join(args.image_path, "result.txt"), "wb") as fd:
+        for pred in pred_result:
+            fd.writelines(str(pred))
+
+
+
+if __name__ == "__main__":
+
+    paser.add_argument("--image_path", type=str, required=True)
+    paser.add_argument("--xml_path", type=str, required=True)
+    paser.add_argument("--mode", type=str, default="train", choices=["train", "test"])
+    paser.add_argument("--save_path", type=str, default="model")
+    paser.add_argument("--model", type=str, default="")
+    paser.add_argument("--batch_size", type=int, default=64)
+    paser.add_argument("--worker", type=int, default=4)
+    paser.add_argument("--epochs", type=int, default=10)
+    paser.add_argument("--lr", type=float, default=0.0001)
+    paser.add_argument("--use_gpu", type=bool, default=True)
+    paser.add_argument("--augmentation", type=bool, default=False)
+    paser.add_argument("--num_class", type=int, default=2)
+    args = paser.parse_args()
+
+    if args.mode == "train":
+        train(args)
+    else:
+        predict(args)

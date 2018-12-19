@@ -3,6 +3,7 @@
 import os
 from torch.utils.data import DataLoader, Dataset
 import cv2
+import torch
 import numpy as np
 from PIL import Image, ImageFile
 from utils import data_util
@@ -22,15 +23,19 @@ labelColor = {'白实线':60, '黄实线':60, '停止线':75,
               '左转直行信号灯':165, '右转直行信号灯':180,
               '直行信号灯':195, '左转信号灯':210, '右转信号灯':225,}
 
+toTensor = ToTensor()
+
 class TrafficDataSet(Dataset):
-    def __init__(self, imagepath, xmlpath, names, width, height, transform=None):
+    def __init__(self, imagepath, xmlpath, names, width, height,
+                 mode="train", transform=None):
+
         self.imagepath = imagepath
         self.xmlpath = xmlpath
         self.width = width
         self.height = height
         self.shape = (width, height)
         self.transform = transform
-
+        self.mode = mode
         self.names = names
 
     def load_label(self, file):
@@ -51,8 +56,15 @@ class TrafficDataSet(Dataset):
 
         file_name = os.path.basename(file_path)
         items = file_name.split("_")
-        tmps, mask_w, mask_h, mask = self.load_label(items[2]+".xml")
+
+        if self.mode == "train":
+            scene = items[2]
+        else:
+            scene = items[1]
+
+        tmps, mask_w, mask_h, mask = self.load_label(scene+".xml")
         mask = cv2.resize(mask, (self.width, self.height))
+        mask = mask[...,np.newaxis]
 
         filepath = os.path.join(self.imagepath, file_path)
         image = Image.open(filepath)
@@ -60,24 +72,36 @@ class TrafficDataSet(Dataset):
 
         array = data_util.image_split(image, tmps, (self.width, self.height))
 
-        array = np.stack(array)
+        label_image = []
 
-        mask = mask[:,:,np.newaxis]
-        mask = np.tile(mask,(array.shape[0],1,1,1))
-        array = np.concatenate((array, mask), -1)
+        mask = toTensor(mask)
+        for timage in array:
+            # print(timage.shape, mask.shape)
+            image = Image.fromarray(timage)
+            if self.transform:
+                image = self.transform(image)
 
-        label = int(items[0])
-        return array, label
+            image = toTensor(image)
+            image = torch.cat((image, mask))
+            label_image.append(image)
+
+        label_image = torch.stack(label_image)
+        # mask = mask[:,:,np.newaxis]
+        # mask = np.tile(mask,(array.shape[0],1,1,1))
+        # array = np.concatenate((array, mask), -1)
+
+        if self.mode == "train":
+            label = int(items[0])
+            return label_image, label
+        else:
+            return label_image
+
 
     def __getitem__(self, index):
         file = self.names[index]
         # print(file)
         x, y = self.load_data(file)
-        x = np.transpose(x, (0, 3, 1, 2)) / 255.0
-
-        if self.transform:
-            x = self.transform(x)
-
+        # x = np.transpose(x, (0, 3, 1, 2)) / 255.0
         return x, y
 
     def __len__(self):
