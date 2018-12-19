@@ -18,6 +18,8 @@ class Model(nn.Module):
         super(Model, self).__init__()
         self.num_class = num_class
         resnet = models.resnet18(False)
+        resnet.conv1 = nn.Conv2d(4, 64, kernel_size=7, stride=2, padding=3,
+                               bias=False)
         feature_size = 107520
 
         resnet = nn.Sequential(*list(resnet.children())[:-1])
@@ -93,8 +95,8 @@ def train(train_data, test_data, model, args):
 
                 _, predicted = torch.max(out, 1)
 
-                y_label.extend(y.item())
-                y_pred.append(predicted)
+                y_label.extend(y.cpu().data.numpy())
+                y_pred.extend(predicted)
 
             print("total test samples:", total)
             print("loss:", loss / total)
