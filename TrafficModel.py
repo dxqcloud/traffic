@@ -20,7 +20,8 @@ class Model(nn.Module):
         resnet = models.resnet18(False)
         resnet.conv1 = nn.Conv2d(4, 64, kernel_size=7, stride=2, padding=3,
                                bias=False)
-        feature_size = 107520
+
+        feature_size = 107520 + 3
 
         resnet = nn.Sequential(*list(resnet.children())[:-1])
 
@@ -36,7 +37,7 @@ class Model(nn.Module):
 
         # print(self.resnet)
 
-    def forward(self, input):
+    def forward(self, input, type):
         feature = []
         # input = input[0]
         # print(input.size())
@@ -44,6 +45,7 @@ class Model(nn.Module):
             x = self.resnet(input[:,i,:,:,:])
             x = x.view(x.size(0), -1)
             feature.append(x)
+        feature.append(type)
         feature = torch.cat(feature,1)
         # print(feature.size())
         out = self.fc1(feature)
@@ -59,14 +61,16 @@ def train_model(train_data, test_data, model, args):
     # print("training samples:", len(train_data))
     for epoch in range(args.epochs):
         batch = 0
-        for x, y in train_data:
+        for x, type, y in train_data:
 
             optimzer.zero_grad()
             x = x.type("torch.FloatTensor")
+            type = type.type("torch.FloatTensor")
             if args.use_gpu:
                 x = x.cuda()
+                type = type.cuda()
                 y = y.cuda()
-            out = model.forward(x)
+            out = model.forward(x, type)
             loss = lossfunc(out, y)
             loss.backward()
             optimzer.step()
@@ -84,12 +88,14 @@ def train_model(train_data, test_data, model, args):
             total = 0
             y_pred = []
             y_label = []
-            for x, y in test_data:
+            for x, type, y in test_data:
                 x = x.type("torch.FloatTensor")
+                type = type.type("torch.FloatTensor")
                 if args.use_gpu:
                     x = x.cuda()
+                    type = type.cuda()
                     y = y.cuda()
-                out = model.forward(x)
+                out = model.forward(x, type)
                 loss += lossfunc(out, y).item()
                 total += y.size(0)
 
@@ -131,8 +137,7 @@ def train(args):
 
     transform = None
     if args.augmentation:
-        normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406, 0],
-                                         std=[0.229, 0.224, 0.225, 1])
+
         transform = transforms.Compose([
             transforms.RandomRotation(5),
             transforms.ColorJitter(brightness=0.1)
@@ -144,8 +149,8 @@ def train(args):
     dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, 500, 400)
     test_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=False)
     #
-    # for x, y in train_loader:
-    #     print(x.shape)
+    # for x, type, y in train_loader:
+    #     print(x.shape, type.shape, y.shape)
 
     print("Train data:", len(train_loader))
     print("Test data:", len(test_loader))

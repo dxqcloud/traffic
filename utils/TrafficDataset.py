@@ -25,6 +25,14 @@ labelColor = {'白实线':60, '黄实线':60, '停止线':75,
 
 toTensor = ToTensor()
 
+def typeOneHot(type):
+    typelist = {"1625":0, "1208":1, "1345":2}
+    vec = np.zeros(3)
+    id = typelist.get(type)
+    vec[id] = 1
+    return vec
+
+
 class TrafficDataSet(Dataset):
     def __init__(self, imagepath, xmlpath, names, width, height,
                  mode="train", transform=None):
@@ -71,7 +79,6 @@ class TrafficDataSet(Dataset):
         image = np.array(image)
 
         array = data_util.image_split(image, tmps, (self.width, self.height))
-
         label_image = []
 
         mask = toTensor(mask)
@@ -90,19 +97,26 @@ class TrafficDataSet(Dataset):
         # mask = np.tile(mask,(array.shape[0],1,1,1))
         # array = np.concatenate((array, mask), -1)
 
-        if self.mode == "train":
-            label = int(items[0])
-            return label_image, label
-        else:
-            return label_image
+        return label_image
 
 
     def __getitem__(self, index):
         file = self.names[index]
         # print(file)
-        x, y = self.load_data(file)
-        # x = np.transpose(x, (0, 3, 1, 2)) / 255.0
-        return x, y
+
+        x = self.load_data(file)
+
+        items = file.split("_")
+        if self.mode == "train":
+            y = int(items[0])
+            type = items[1][:-1]
+            scene = items[2]
+            return x, typeOneHot(type), y
+        else:
+            type = items[0][:-1]
+            scene = items[1]
+            return x, typeOneHot(type)
+
 
     def __len__(self):
         return len(self.names)
