@@ -65,10 +65,10 @@ class TrafficDataSet(Dataset):
         file_name = os.path.basename(file_path)
         items = file_name.split("_")
 
-        if self.mode == "train":
-            scene = items[2]
-        else:
+        if self.mode == "predict":
             scene = items[1]
+        else:
+            scene = items[2]
 
         tmps, mask_w, mask_h, mask = self.load_label(scene+".xml")
         mask = cv2.resize(mask, (self.width, self.height))
@@ -107,15 +107,15 @@ class TrafficDataSet(Dataset):
         x = self.load_data(file)
 
         items = file.split("_")
-        if self.mode == "train":
+        if self.mode == "predict":
+            type = items[0][:-1]
+            scene = items[1]
+            return x, typeOneHot(type)
+        else:
             y = int(items[0])
             type = items[1][:-1]
             scene = items[2]
             return x, typeOneHot(type), y
-        else:
-            type = items[0][:-1]
-            scene = items[1]
-            return x, typeOneHot(type)
 
 
     def __len__(self):

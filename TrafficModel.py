@@ -161,13 +161,37 @@ def train(args):
     print("Build Model......")
     model = Model(args.num_class)
     if args.pretrain_model:
-        model.load_state_dict(args.pretrain_model)
+        model.load_state_dict(torch.load(args.pretrain_model))
 
     if args.use_gpu:
         model = model.cuda()
 
     print("Begin training......")
     train_model(train_loader, test_loader, model, args)
+
+# for validation test
+def test(args):
+
+    xlist = os.listdir(args.xml_path)
+    test_names = data_util.SplitData(args.image_path, "test", xlist, 0.5)
+
+    dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, 480, 320)
+    test_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=False)
+    #
+    # for x, type, y in train_loader:
+    #     print(x.shape, type.shape, y.shape)
+
+    print("Test data:", len(test_loader))
+    print("Build Model......")
+    model = Model(args.num_class)
+    if args.pretrain_model:
+        model.load_state_dict(torch.load(args.pretrain_model))
+
+    if args.use_gpu:
+        model = model.cuda()
+
+    print("Begin test......")
+    validation(test_loader, model, args)
 
 
 def predict(args):
@@ -182,12 +206,12 @@ def predict(args):
     model = Model(args.num_class)
 
     if args.pretrain_model:
-        model.load_state_dict(args.pretrain_model)
+        model.load_state_dict(torch.load(args.pretrain_model))
 
     if args.use_gpu:
         model = model.cuda()
 
-    print("Begin Test......")
+    print("Begin predict......")
     pred_result = predict_model(test_loader, model, args)
 
     with open(os.path.join(args.image_path, "result.txt"), "wb") as fd:
@@ -200,7 +224,7 @@ if __name__ == "__main__":
 
     paser.add_argument("--image_path", type=str, required=True)
     paser.add_argument("--xml_path", type=str, required=True)
-    paser.add_argument("--mode", type=str, default="train", choices=["train", "test"])
+    paser.add_argument("--mode", type=str, default="train", choices=["train", "test", "predict"])
     paser.add_argument("--save_path", type=str, default="model")
     paser.add_argument("--pretrain_model", type=str, default="")
     paser.add_argument("--batch_size", type=int, default=64)
@@ -214,5 +238,7 @@ if __name__ == "__main__":
 
     if args.mode == "train":
         train(args)
+    elif args.mode == "test":
+        test(args)
     else:
         predict(args)
