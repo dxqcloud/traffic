@@ -106,6 +106,7 @@ class TrafficDataSet(Dataset):
 
         x = self.load_data(file)
 
+        file = os.path.basename(file)
         items = file.split("_")
         if self.mode == "predict":
             type = items[0][:-1]

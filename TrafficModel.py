@@ -12,25 +12,34 @@ from utils import data_util
 
 paser = argparse.ArgumentParser()
 
+input_w, input_h = (480, 320)
+
 class Model(nn.Module):
 
-    def __init__(self, num_class):
+    def __init__(self, num_class, base_model='resnet18'):
         super(Model, self).__init__()
         self.num_class = num_class
-        resnet = models.resnet18(False)
-        resnet.conv1 = nn.Conv2d(4, 64, kernel_size=7, stride=2, padding=3,
+        self.base_model = base_model
+        if self.base_model == 'alexnet':
+            base = models.alexnet(True)
+            base.features[0] = nn.Conv2d(4, 64, kernel_size=11, stride=4, padding=2,
+                               bias=False)
+            feature_size = 96771
+        else:
+            base = models.resnet18(False)
+            base.conv1 = nn.Conv2d(4, 64, kernel_size=7, stride=2, padding=3,
                                bias=False)
 
-        feature_size = 55296 + 3
+            feature_size = 55296 + 3
 
-        resnet = nn.Sequential(*list(resnet.children())[:-1])
+        base = nn.Sequential(*list(base.children())[:-1])
 
         # resnet.fc = nn.LeakyReLU(0.1)
 
-        for param in resnet.parameters():
+        for param in base.parameters():
             param.requires_grad = False
 
-        self.resnet = resnet
+        self.base = base
         self.fc1 = nn.Linear(feature_size, 1024)
         self.dropout = nn.Dropout()
         self.fc2 = nn.Linear(1024, num_class)
@@ -42,7 +51,7 @@ class Model(nn.Module):
         # input = input[0]
         # print(input.size())
         for i in range(3):
-            x = self.resnet(input[:,i,:,:,:])
+            x = self.base(input[:,i,:,:,:])
             x = x.view(x.size(0), -1)
             feature.append(x)
         feature.append(type)
@@ -72,6 +81,7 @@ def validation(test_data, model, args):
             _, predicted = torch.max(out, 1)
             y_label.extend(y.cpu().data.numpy())
             y_pred.extend(predicted)
+            print("accuracy={}%".format(100 * accuracy_score(y_label, y_pred)))
 
         print("total test samples:", total)
         print("accuracy={}%".format(100 * accuracy_score(y_label, y_pred)))
@@ -144,10 +154,10 @@ def train(args):
             transforms.ColorJitter(brightness=0.1)
         ])
 
-    dataset = TrafficDataSet(args.image_path, args.xml_path, train_names, 480, 320, transform=transform)
+    dataset = TrafficDataSet(args.image_path, args.xml_path, train_names, input_w, input_h, transform=transform)
     train_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=True)
 
-    dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, 480, 320)
+    dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, input_w, input_h)
     test_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=False)
     #
     # for x, type, y in train_loader:
@@ -159,7 +169,7 @@ def train(args):
     print("Train data:", len(train_loader))
     print("Test data:", len(test_loader))
     print("Build Model......")
-    model = Model(args.num_class)
+    model = Model(args.num_class, args.model)
     if args.pretrain_model:
         model.load_state_dict(torch.load(args.pretrain_model))
 
@@ -175,7 +185,7 @@ def test(args):
     xlist = os.listdir(args.xml_path)
     test_names = data_util.SplitData(args.image_path, "test", xlist, 0.5)
 
-    dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, 480, 320)
+    dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, input_w, input_h)
     test_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=False)
     #
     # for x, type, y in train_loader:
@@ -183,7 +193,7 @@ def test(args):
 
     print("Test data:", len(test_loader))
     print("Build Model......")
-    model = Model(args.num_class)
+    model = Model(args.num_class, args.model)
     if args.pretrain_model:
         model.load_state_dict(torch.load(args.pretrain_model))
 
@@ -198,12 +208,12 @@ def predict(args):
 
     test_names = os.listdir(args.image_path)
 
-    dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, 480, 320)
+    dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, input_w, input_h, mode="predict")
     test_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=False)
 
     print("Test data:", len(test_loader))
     print("Build Model......")
-    model = Model(args.num_class)
+    model = Model(args.num_class, args.model)
 
     if args.pretrain_model:
         model.load_state_dict(torch.load(args.pretrain_model))
@@ -219,13 +229,13 @@ def predict(args):
             fd.writelines(str(pred))
 
 
-
 if __name__ == "__main__":
 
     paser.add_argument("--image_path", type=str, required=True)
     paser.add_argument("--xml_path", type=str, required=True)
     paser.add_argument("--mode", type=str, default="train", choices=["train", "test", "predict"])
     paser.add_argument("--save_path", type=str, default="model")
+    paser.add_argument("--model", type=str, default="alexnet")
     paser.add_argument("--pretrain_model", type=str, default="")
     paser.add_argument("--batch_size", type=int, default=64)
     paser.add_argument("--worker", type=int, default=4)

@@ -112,10 +112,10 @@ def SplitData(path, mode, xlist, test_size=0.3, seed = 0):
     for class_type in class_path:
         names = []
         for file in os.listdir(os.path.join(path, class_type)):
-            # print(file)
-            items = file.split("_")
-            if items[2]+".xml" in xlist:
-                names.append(os.path.join(class_type, file))
+            if file.endswith(".jpg"):
+                items = file.split("_")
+                if items[2]+".xml" in xlist:
+                    names.append(os.path.join(class_type, file))
 
         # print(names.shape)
         train, test = train_test_split(names, test_size=test_size, random_state=seed)
