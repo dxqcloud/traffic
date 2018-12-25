@@ -2,7 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7bd3e256-b3d3-409a-8ff5-02c250dcbf76" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/scripts/namelist.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scripts/score.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TrafficModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/TrafficModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train.sh" beforeDir="false" afterPath="$PROJECT_DIR$/train.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/TrafficDataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/TrafficDataset.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,22 +24,28 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utils/data_util.py">
+        <entry file="file://$PROJECT_DIR$/train.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2242">
-              <caret line="123" column="18" selection-start-line="123" selection-start-column="12" selection-end-line="123" selection-end-column="18" />
-              <folding>
-                <element signature="e#24#59#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="76">
+              <caret line="4" column="25" selection-start-line="4" selection-start-column="25" selection-end-line="4" selection-end-column="25" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/train.sh">
+        <entry file="file://$PROJECT_DIR$/test.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="95">
-              <caret line="5" column="39" selection-start-line="5" selection-start-column="39" selection-end-line="5" selection-end-column="39" />
+            <state relative-caret-position="114">
+              <caret line="6" column="52" selection-start-line="6" selection-start-column="52" selection-end-line="6" selection-end-column="52" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts/score.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="361">
+              <caret line="20" selection-start-line="20" selection-end-line="20" />
             </state>
           </provider>
         </entry>
@@ -40,8 +53,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/TrafficModel.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="269">
-              <caret line="239" lean-forward="true" selection-start-line="239" selection-end-line="239" />
+            <state relative-caret-position="5244">
+              <caret line="276" column="44" selection-start-line="276" selection-start-column="44" selection-end-line="276" selection-end-column="44" />
               <folding>
                 <element signature="e#16#25#0" expanded="true" />
               </folding>
@@ -50,10 +63,28 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/predict.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="19">
+              <caret line="1" column="22" selection-start-line="1" selection-start-column="22" selection-end-line="1" selection-end-column="22" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://C:/UserProgram/python/Lib/site-packages/torchvision/transforms/transforms.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="16188">
+              <caret line="856" column="8" selection-start-line="856" selection-start-column="8" selection-end-line="856" selection-end-column="8" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/TrafficDataset.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2299">
-              <caret line="128" column="34" selection-start-line="128" selection-start-column="34" selection-end-line="128" selection-end-column="34" />
+            <state relative-caret-position="931">
+              <caret line="56" column="29" selection-start-line="56" selection-start-column="29" selection-end-line="56" selection-end-column="29" />
               <folding>
                 <element signature="e#17#26#0" expanded="true" />
               </folding>
@@ -62,28 +93,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/.PyCharm2018.3/system/python_stubs/1788994789/cv2/cv2/__init__.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="134824">
-              <caret line="7109" column="38" selection-start-line="7109" selection-start-column="38" selection-end-line="7109" selection-end-column="38" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://C:/UserProgram/python/Lib/site-packages/sklearn/metrics/classification.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="27436">
-              <caret line="1462" column="40" selection-start-line="1462" selection-start-column="40" selection-end-line="1462" selection-end-column="40" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/dataloader.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="836">
-              <caret line="50" selection-start-line="31" selection-end-line="50" />
+            <state relative-caret-position="551">
+              <caret line="35" column="39" selection-start-line="35" selection-start-column="39" selection-end-line="35" selection-end-column="39" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -99,6 +112,15 @@
               <folding>
                 <element signature="e#17#27#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://C:/UserProgram/python/Lib/site-packages/sklearn/metrics/classification.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="17366">
+              <caret line="932" column="40" selection-start-line="932" selection-start-column="40" selection-end-line="932" selection-end-column="40" />
             </state>
           </provider>
         </entry>
@@ -129,9 +151,13 @@
         <option value="$PROJECT_DIR$/utils/dataloader.py" />
         <option value="$PROJECT_DIR$/utils/data-clean.py" />
         <option value="$PROJECT_DIR$/predict.py" />
+        <option value="$PROJECT_DIR$/scripts/namelist.py" />
+        <option value="$PROJECT_DIR$/test.sh" />
         <option value="$PROJECT_DIR$/train.sh" />
         <option value="$PROJECT_DIR$/utils/TrafficDataset.py" />
         <option value="$PROJECT_DIR$/TrafficModel.py" />
+        <option value="$PROJECT_DIR$/predict.sh" />
+        <option value="$PROJECT_DIR$/scripts/score.py" />
       </list>
     </option>
   </component>
@@ -153,11 +179,6 @@
               <item name="subsrc" type="b2602c69:ProjectViewProjectNode" />
               <item name="subsrc" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="subsrc" type="b2602c69:ProjectViewProjectNode" />
-              <item name="subsrc" type="462c0819:PsiDirectoryNode" />
-              <item name="utils" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -176,6 +197,11 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\workstation\traffic-event\subsrc" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -256,17 +282,21 @@
       <updated>1545190679533</updated>
       <workItem from="1545190680693" duration="1713000" />
       <workItem from="1545192876684" duration="38440000" />
+      <workItem from="1545287898656" duration="2986000" />
+      <workItem from="1545292748700" duration="20781000" />
+      <workItem from="1545354079840" duration="20321000" />
+      <workItem from="1545396988707" duration="162000" />
+      <workItem from="1545704376774" duration="19000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="41886000" />
+    <option name="totallyTimeSpent" value="86155000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-6" y="0" width="1292" height="696" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25769854" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21231766" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -290,6 +320,31 @@
       <window_info anchor="right" id="Database" order="4" />
       <window_info anchor="right" id="Remote Host" order="5" weight="0.3298217" />
     </layout>
+    <layout-to-restore>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26580226" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3280142" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Database Changes" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" weight="0.32978722" />
+      <window_info anchor="bottom" id="Terminal" order="11" />
+      <window_info anchor="bottom" id="Python Console" order="12" />
+      <window_info anchor="bottom" id="File Transfer" order="13" weight="0.3280142" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="SciView" order="3" />
+      <window_info anchor="right" id="Database" order="4" />
+      <window_info anchor="right" id="Remote Host" order="5" weight="0.3298217" />
+    </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -374,27 +429,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/UserProgram/python/Lib/site-packages/torch/nn/modules/loss.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="64">
-          <caret line="751" column="29" selection-start-line="751" selection-start-column="23" selection-end-line="751" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/UserProgram/python/Lib/site-packages/torchvision/transforms/transforms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1064">
-          <caret line="60" column="6" selection-start-line="60" selection-start-column="6" selection-end-line="60" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/UserProgram/python/Lib/site-packages/torchvision/transforms/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="9" lean-forward="true" selection-start-column="9" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/UserProgram/python/Lib/site-packages/torch/nn/modules/module.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-221">
@@ -402,20 +436,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/train.sh">
+    <entry file="file://C:/UserProgram/python/Lib/site-packages/sklearn/metrics/ranking.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="5" column="39" selection-start-line="5" selection-start-column="39" selection-end-line="5" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils/TrafficDataset.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2299">
-          <caret line="128" column="34" selection-start-line="128" selection-start-column="34" selection-end-line="128" selection-end-column="34" />
-          <folding>
-            <element signature="e#17#26#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="170">
+          <caret line="663" column="4" selection-start-line="663" selection-start-column="4" selection-end-line="663" selection-end-column="4" />
         </state>
       </provider>
     </entry>
@@ -426,17 +450,114 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/UserProgram/python/Lib/site-packages/sklearn/metrics/classification.py">
+    <entry file="file://C:/UserProgram/python/Lib/typing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="27436">
-          <caret line="1462" column="40" selection-start-line="1462" selection-start-column="40" selection-end-line="1462" selection-end-column="40" />
+        <state relative-caret-position="64">
+          <caret line="2273" lean-forward="true" selection-start-line="2273" selection-end-line="2273" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/python_stubs/1788994789/nt.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="368">
+          <caret line="304" column="35" selection-start-line="304" selection-end-line="305" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/UserProgram/python/Lib/site-packages/torch/utils/data/dataloader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="311">
+          <caret line="418" column="45" selection-start-line="418" selection-end-line="419" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/UserProgram/python/Lib/site-packages/torch/optim/adam.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="311">
+          <caret line="35" column="35" lean-forward="true" selection-start-line="35" selection-start-column="35" selection-end-line="35" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/UserProgram/python/Lib/site-packages/torch/nn/modules/loss.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="751" column="8" selection-start-line="751" selection-start-column="8" selection-end-line="751" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/UserProgram/python/Lib/site-packages/torchvision/transforms/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="12" selection-start-column="12" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/namelist.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="8" column="33" lean-forward="true" selection-start-line="8" selection-start-column="33" selection-end-line="8" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/typeshed/stdlib/3/typing.pyi">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="348" column="8" selection-start-line="348" selection-start-column="8" selection-end-line="348" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/data_util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-59">
+          <caret line="121" column="33" lean-forward="true" selection-start-line="121" selection-start-column="33" selection-end-line="121" selection-end-column="33" />
+          <folding>
+            <element signature="e#24#59#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="4" column="25" selection-start-line="4" selection-start-column="25" selection-end-line="4" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/score.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="361">
+          <caret line="20" selection-start-line="20" selection-end-line="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/predict.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="19">
+          <caret line="1" column="22" selection-start-line="1" selection-start-column="22" selection-end-line="1" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/UserProgram/python/Lib/site-packages/torchvision/transforms/transforms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="16188">
+          <caret line="856" column="8" selection-start-line="856" selection-start-column="8" selection-end-line="856" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/TrafficDataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="931">
+          <caret line="56" column="29" selection-start-line="56" selection-start-column="29" selection-end-line="56" selection-end-column="29" />
+          <folding>
+            <element signature="e#17#26#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/utils/dataloader.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="836">
-          <caret line="50" selection-start-line="31" selection-end-line="50" />
+        <state relative-caret-position="551">
+          <caret line="35" column="39" selection-start-line="35" selection-start-column="39" selection-end-line="35" selection-end-column="39" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
@@ -453,20 +574,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils/data_util.py">
+    <entry file="file://C:/UserProgram/python/Lib/site-packages/sklearn/metrics/classification.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2242">
-          <caret line="123" column="18" selection-start-line="123" selection-start-column="12" selection-end-line="123" selection-end-column="18" />
-          <folding>
-            <element signature="e#24#59#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="17366">
+          <caret line="932" column="40" selection-start-line="932" selection-start-column="40" selection-end-line="932" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="6" column="52" selection-start-line="6" selection-start-column="52" selection-end-line="6" selection-end-column="52" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/TrafficModel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="269">
-          <caret line="239" lean-forward="true" selection-start-line="239" selection-end-line="239" />
+        <state relative-caret-position="5244">
+          <caret line="276" column="44" selection-start-line="276" selection-start-column="44" selection-end-line="276" selection-end-column="44" />
           <folding>
             <element signature="e#16#25#0" expanded="true" />
           </folding>

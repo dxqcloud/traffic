@@ -1,14 +1,17 @@
 #encoding=utf-8
 import os
+import time
 import torch.nn as nn
 import torch
 from torchvision import models, transforms
 from torch.utils.data import DataLoader, Dataset
 import argparse
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_fscore_support
 
 from utils.TrafficDataset import TrafficDataSet
 from utils import data_util
+
+from scripts.score import get_score, stats, cal_score
 
 paser = argparse.ArgumentParser()
 
@@ -24,6 +27,10 @@ class Model(nn.Module):
             base = models.alexnet(True)
             base.features[0] = nn.Conv2d(4, 64, kernel_size=11, stride=4, padding=2,
                                bias=False)
+            # 500,400
+            # feature_size = 118275
+
+            # 480,320
             feature_size = 96771
         else:
             base = models.resnet18(False)
@@ -43,6 +50,8 @@ class Model(nn.Module):
         self.fc1 = nn.Linear(feature_size, 1024)
         self.dropout = nn.Dropout()
         self.fc2 = nn.Linear(1024, num_class)
+
+        print(feature_size)
 
         # print(self.resnet)
 
@@ -81,16 +90,17 @@ def validation(test_data, model, args):
             _, predicted = torch.max(out, 1)
             y_label.extend(y.cpu().data.numpy())
             y_pred.extend(predicted)
-            print("accuracy={}%".format(100 * accuracy_score(y_label, y_pred)))
+            result = precision_recall_fscore_support(y_label, y_pred, average="binary")
+            print("total={}, accuracy={}%".format(total, 100 * accuracy_score(y_label, y_pred)))
+            print("p={}, r={}, f={}, s={}".format(*result))
+            print("score={}".format((0.7*result[1]+0.3*result[0])*100))
 
-        print("total test samples:", total)
-        print("accuracy={}%".format(100 * accuracy_score(y_label, y_pred)))
-        print(confusion_matrix(y_label, y_pred))
-        # print(classification_report(y_label, y_pred))
+        return y_pred
 
 
 def train_model(train_data, test_data, model, args):
-    lossfunc = nn.CrossEntropyLoss()
+    weight = torch.FloatTensor([0.3, 0.7]).cuda()
+    lossfunc = nn.CrossEntropyLoss(weight=weight)
     optimzer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
 
     # print("training samples:", len(train_data))
@@ -144,20 +154,24 @@ def predict_model(test_data, model, args):
 def train(args):
 
     xlist = os.listdir(args.xml_path)
-    train_names, test_names = data_util.SplitData(args.image_path, "train", xlist, 0.5)
+    train_path = os.path.join(args.image_path, "train_data")
+    val_path = os.path.join(args.image_path, "val_data")
+    # train_names, test_names = data_util.SplitData(args.image_path, "train", xlist, 0.5)
+    train_names = data_util.SplitData(train_path, "test", xlist, 0.5)
+    test_names = data_util.SplitData(val_path, "test", xlist, 0.5)
 
     transform = None
     if args.augmentation:
 
         transform = transforms.Compose([
-            transforms.RandomRotation(5),
+            transforms.RandomAffine(degrees=5, translate=(0.05, 0.05), scale=(0.99,1.01)),
             transforms.ColorJitter(brightness=0.1)
         ])
 
-    dataset = TrafficDataSet(args.image_path, args.xml_path, train_names, input_w, input_h, transform=transform)
+    dataset = TrafficDataSet(train_path, args.xml_path, train_names, input_w, input_h, transform=transform)
     train_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=True)
 
-    dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, input_w, input_h)
+    dataset = TrafficDataSet(val_path, args.xml_path, test_names, input_w, input_h)
     test_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=False)
     #
     # for x, type, y in train_loader:
@@ -201,12 +215,28 @@ def test(args):
         model = model.cuda()
 
     print("Begin test......")
-    validation(test_loader, model, args)
+    ypred = validation(test_loader, model, args)
+
+    num, result, p, r = get_score(ypred, test_names)
+
+    print("type nums:", num)
+    print("final score", result)
+    print("precision", p)
+    print("recall", r)
+
+    with open("result.txt", "wb") as fd:
+        for y, name in zip(ypred, test_names):
+            fd.write("{}#{}\r".format(y, name))
 
 
 def predict(args):
 
     test_names = os.listdir(args.image_path)
+    filter_names = []
+    for name in test_names:
+        if name.endswith(".jpg"):
+            filter_names.append(name)
+    test_names = filter_names
 
     dataset = TrafficDataSet(args.image_path, args.xml_path, test_names, input_w, input_h, mode="predict")
     test_loader = DataLoader(dataset, args.batch_size, num_workers=args.worker, shuffle=False)
@@ -225,16 +255,21 @@ def predict(args):
     pred_result = predict_model(test_loader, model, args)
 
     with open(os.path.join(args.image_path, "result.txt"), "wb") as fd:
-        for pred in pred_result:
-            fd.writelines(str(pred))
+        for name, pred in zip(test_names, pred_result):
+            fd.write(u"{}#{}\r\n".format(pred, name.decode("utf-8")).encode("gbk"))
+
+    num, stats0, stats1 = stats(os.path.join(args.image_path, "result.txt"))
+    print("num:", num)
+    print("label_1:", stats1)
+    print("label_0:", stats0)
 
 
 if __name__ == "__main__":
 
     paser.add_argument("--image_path", type=str, required=True)
     paser.add_argument("--xml_path", type=str, required=True)
-    paser.add_argument("--mode", type=str, default="train", choices=["train", "test", "predict"])
-    paser.add_argument("--save_path", type=str, default="model")
+    paser.add_argument("--mode", type=str, required=True, choices=["train", "test", "predict"])
+    paser.add_argument("--save_path", type=str, required=True)
     paser.add_argument("--model", type=str, default="alexnet")
     paser.add_argument("--pretrain_model", type=str, default="")
     paser.add_argument("--batch_size", type=int, default=64)
@@ -246,9 +281,12 @@ if __name__ == "__main__":
     paser.add_argument("--num_class", type=int, default=2)
     args = paser.parse_args()
 
+    begin = time.time()
     if args.mode == "train":
         train(args)
     elif args.mode == "test":
         test(args)
     else:
         predict(args)
+
+    print("total time:", time.time() - begin)

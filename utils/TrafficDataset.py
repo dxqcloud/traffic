@@ -109,13 +109,14 @@ class TrafficDataSet(Dataset):
         file = os.path.basename(file)
         items = file.split("_")
         if self.mode == "predict":
-            type = items[0][:-1]
+            type = items[0]
             scene = items[1]
             return x, typeOneHot(type)
         else:
             y = int(items[0])
-            type = items[1][:-1]
+            type = items[1]
             scene = items[2]
+            # print(typeOneHot(type))
             return x, typeOneHot(type), y
 
 

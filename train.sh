@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-CUDA_VISIBLE_DEVICES=3 python2 -u TrafficModel.py \
-                       --image_path /home/traffic/data/train_all \
-                       --xml_path /home/traffic/data/mark_clean \
+CUDA_VISIBLE_DEVICES=4 python2 -u TrafficModel.py \
+                       --image_path /deepdata/duxq/traffic/data \
+                       --xml_path /deepdata/duxq/traffic/mark \
                        --mode train \
-                       --batch_size 128 \
-#                       --pretrain_model ../model/model_480/model.31.pth \
-                       --save_path ../model/alex \
-                       --augmentation False | tee log/alexnet.txt
+                       --batch_size 256 \
+                       --save_path ../model/alex_embedding \
+                       --pretrain_model ../model/alex_weight_0.7/model.10.pth \
+                       --augmentation False | tee log/alexnet_weight_affine.txt \
+#                       --pretrain_model ../model/alex_weight_0.7/model.10.pth
